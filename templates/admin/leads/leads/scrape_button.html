@@ -1,0 +1,47 @@
+{% extends "admin/change_list.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="https://cloudflare.com">
+    
+    {# Auto-refresh every 10s only if a site is PENDING #}
+    {% for obj in cl.result_list %}
+        {% if obj.status == 'PENDING' %}
+            <meta http-equiv="refresh" content="10">
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block object-tools-items %}
+    <li>
+        {# Check if any target in the list is currently PENDING #}
+        {% regroup cl.result_list by status as status_list %}
+        {% if status_list.0.grouper == 'PENDING' or status_list.1.grouper == 'PENDING' %}
+            
+            {# BUSY STATE #}
+            <a href="#" style="background-color: #6c757d; color: white; display: flex; align-items: center; gap: 8px; cursor: not-allowed; pointer-events: none;">
+                <i class="fas fa-sync fa-spin"></i>
+                <span>Scraping...</span>
+            </a>
+
+        {% else %}
+
+            {# IDLE STATE #}
+            <a href="run-scrapers/" id="sync-btn" style="background-color: #28a745; color: white; display: flex; align-items: center; gap: 8px;" onclick="startLoading(this)">
+                <span id="btn-icon"><i class="fas fa-play"></i></span>
+                <span id="btn-text">Run Scrapers</span>
+            </a>
+
+        {% endif %}
+    </li>
+    {{ block.super }}
+
+    <script>
+        function startLoading(btn) {
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.7';
+            document.getElementById('btn-text').innerText = 'Initializing...';
+            document.getElementById('btn-icon').innerHTML = '<i class="fas fa-sync fa-spin"></i>';
+        }
+    </script>
+{% endblock %}
