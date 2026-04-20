@@ -33,11 +33,14 @@ class DjangoLeadPipeline:
                 'sentiment_score': sentiment,
                 'comment': text,
                 'source_url': source_url,
+                'status': item.get('status', 'UNKNOWN'),
+                'posted_at': item.get('posted_at'),
+                'work_setup': item.get('work_setup', 'UNKNOWN'),
+                'location': item.get('location'),
             }
 
             with transaction.atomic():
                 if not email:
-
                     lead, created = Lead.objects.get_or_create(
                         name=name,
                         source_url=source_url,
@@ -46,7 +49,6 @@ class DjangoLeadPipeline:
                     )
                     action = "created" if created else "already existed"
                 else:
-
                     lead, created = Lead.objects.update_or_create(
                         email=email,
                         defaults={**lead_data, 'name': name}
@@ -64,6 +66,5 @@ class DjangoLeadPipeline:
             logger.error(f"Database error: {str(e)}", exc_info=True)
             return item
         finally:
-            # Close connections so they don't pile up
             for conn in connections.all():
                 conn.close()

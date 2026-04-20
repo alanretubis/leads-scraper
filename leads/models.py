@@ -30,7 +30,19 @@ class Lead(models.Model):
     job_title = models.CharField(max_length=255, null=True, blank=True) 
     source_url = models.URLField()
     sentiment_score = models.FloatField(default=0.0) # -1.0 to 1.0
+    work_setup = models.TextField(null=True, blank=True)
+    location = models.TextField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
+    posted_at = models.DateField(null=True, blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('OPEN', 'Open / Hiring'),
+            ('CLOSED', 'Closed / Not Hiring'),
+            ('UNKNOWN', 'Unknown'),
+        ],
+        default='UNKNOWN'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

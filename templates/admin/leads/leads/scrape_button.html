@@ -4,7 +4,6 @@
     {{ block.super }}
     <link rel="stylesheet" href="https://cloudflare.com">
     
-    {# Auto-refresh every 10s only if a site is PENDING #}
     {% for obj in cl.result_list %}
         {% if obj.status == 'PENDING' %}
             <meta http-equiv="refresh" content="10">
@@ -14,7 +13,6 @@
 
 {% block object-tools-items %}
     <li>
-        {# Check if any target in the list is currently PENDING #}
         {% regroup cl.result_list by status as status_list %}
         {% if status_list.0.grouper == 'PENDING' or status_list.1.grouper == 'PENDING' %}
             
